@@ -1,0 +1,541 @@
+swagger: "2.0"
+info:
+  description: "Trabajo final pedidos de restaurante"
+  version: "1.0.1"
+  title: "Resto"
+  termsOfService: "http://www.apache.org/licenses/LICENSE-2.0.html"
+  contact:
+    email: "cbawalter@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "resto.com"
+basePath: "/v2"
+tags:
+- name: "Pedidos"
+  description: "Alta de pedidos y cambio de estado"
+  externalDocs:
+    description: "Alta de pedidos y cambio de estado"
+    url: "http://swagger.io"
+- name: "Productos"
+  description: "CRUD de productos"
+  externalDocs:
+    description: "CRUD de productos"
+    url: "http://swagger.io"        
+- name: "Favoritos"
+  description: "Eleccion de los productos favoritos del usuario"
+  externalDocs:
+    description: "Eleccion de los productos favoritos del usuario"
+    url: "http://swagger.io"    
+- name: "Usuarios"
+  description: "Operaciones del usuario"
+  externalDocs:
+    description: "Operaciones del usuario"
+    url: "http://swagger.io"
+schemes:
+- "https"
+- "http"
+paths:
+  /usuarios/agregar:
+    post:
+      tags:
+        - Usuarios
+      summary: Crea un nuevo usuario
+      description: Sin restricciones, la pass se guarda encriptada.
+      operationId: Usuarios
+      produces:
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: Crea un objeto usuario
+          required: true
+          schema:
+            $ref: '#/definitions/Usuarios'
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente
+        '400':
+          description: Informacion incorrecta
+  /login:
+    post:
+      tags:
+        - Usuarios
+      summary: Login del usuario al sistema
+      description: ''
+      operationId: login
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Envia al servidor un objeto login
+          required: true
+          schema:
+            $ref: '#/definitions/Login'         
+      responses:
+        '200':
+          description: Operacion exitosa, devuelve un string con el objeto usuario encriptado, que es agregado en Authorizationen / Bearer de otras operaciones. 
+          schema:
+            type: string
+        '404':
+          description: No existe el usuario o la contraseña  
+  /updateUser:      
+    put:
+      tags:
+        - Usuarios
+      summary: Actualizacion de datos del usuario
+      description: Solo puede actualizar sus propios datos (usuario logueado) excepto el nombre de usuario y rol.
+      operationId: UsuarioLogueado
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Actualiza el objeto usuario
+          required: true
+          schema:
+            $ref: '#/definitions/UsuarioLogueado'
+      responses:
+        '400':
+          description: Informacion incorrecta
+        '200':
+          description: Usuario xxxxxxx actualizado.    
+  /usuarios/{id}:
+    delete:
+      tags:
+        - Usuarios
+      summary: Borra un usuario
+      description: ''
+      operationId: deleteUser
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: api_key
+          in: header
+          required: false
+          type: string      
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        '401':
+          description: Usuario no autorizado (solo administradores borran)
+        '200':
+          description: Usuario borrado exitosamente     
+  /usuarios:
+    get:
+      tags:
+        - Usuarios
+      summary: Listado de usuarios del sistema
+      description: ''
+      operationId: getAllUsers
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: api_key
+          in: header
+          required: false
+          type: string      
+      responses:
+        '401':
+          description: Usuario no autorizado (solo administradores listan)
+        '200':
+          description: Usuarios 
+  /productos/agregar:
+    post:
+      tags:
+        - Productos
+      summary: Agrega un producto a la BD
+      description: Administradores agregan un producto a la BD.
+      operationId: addProducts
+      produces:
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: Producto que se agrega a la base. Incluye imagen pasada a texto.
+          required: true
+          schema:
+            $ref: '#/definitions/Productos'
+      responses:
+        '200':
+          description: Producto agregado con éxito
+        '401':
+          description: Usuario no autorizado     
+  /productos/actualizar:    
+    put:
+      tags:
+        - Productos
+      summary: Actualiza un producto existente
+      description: ''
+      operationId: updateProducts
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Pet object that needs to be added to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Productos'
+      responses:
+        '200':
+          description: Producto agregado con éxito      
+        '401':
+          description: Usuario no autorizado
+        '500':
+          description: Se ha producido un error, contacte al administrador
+  /productos:
+    get:
+      tags:
+        - Productos
+      summary: Listado de productos
+      description: ''
+      operationId: getAllProducts
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: api_key
+          in: header
+          required: false
+          type: string      
+      responses:
+        '200':
+          description: UsuariosProducto agregado con éxito              
+        '400':
+          description: Informacion incorrecta      
+        '401':
+          description: Usuario no autorizado (solo administradores listan)
+        '500':
+          description: Se ha producido un error, contacte al administrador 
+  /productos/borrar/{id}:
+    delete:
+      tags:
+        - Productos
+      summary: Borra un producto de la BD
+      description: ''
+      operationId: deleteProduct
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: api_key
+          in: header
+          required: false
+          type: string      
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        '401':
+          description: Usuario no autorizado (solo administradores borran)
+        '200':
+          description: Producto borrado exitosamente           
+  /favoritos:
+    get:
+      tags:
+        - Favoritos
+      summary: Productos favoritos del usuario logueado
+      description: ''
+      operationId: getFavorites
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: api_key
+          in: header
+          required: false
+          type: string      
+      responses:
+        '200':
+          description: productos favoritos
+  /pedido/agregar:
+    post:
+      tags:
+      - "Pedidos"
+      summary: "Crea un pedido"
+      description: ""
+      operationId: "newOrder"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Orden de pedido"
+        required: true
+        schema:
+          $ref: "#/definitions/Pedido"
+      responses:
+        "200":
+          description: "Se ha creado el pedido con exito"
+        "400":
+          description: "Informacion incorrecta" 
+  /pedidos/{id}:
+    get:
+      tags:
+      - "Pedidos"
+      summary: "Obtiene un pedido por ID"
+      description: "Obtiene un pedido por ID"
+      operationId: "getOrder"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Numero de pedido"
+        required: true
+        type: "integer"
+        format: "int64"      
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/PedidoIndividual"
+  /pedidos:
+    get:
+      tags:
+      - "Pedidos"
+      summary: "Obtiene listado de pedidos"
+      description: "Obtiene listado de pedidos"
+      operationId: "getAllOrders"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        "200":
+          description: "Operacion exitosa"
+          schema:
+            $ref: "#/definitions/PedidosCompletos"        
+  /pedidos/cambiarestado:    
+    put:
+      tags:
+        - "Pedidos"
+      summary: Actualiza el estado de un pedido
+      description: ''
+      operationId: changeStatus
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Cambia el estado de un pedido
+          required: true
+          schema:
+            $ref: '#/definitions/CambiarEstado'
+      responses:
+        '200':
+          description: Cambio de estado exitoso 
+        '400':
+          description: Informacion incorrecta          
+        '401':
+          description: Usuario no autorizado
+        '404':
+          description: Pedido no encontrado          
+        '500':
+          description: Se ha producido un error, contacte al administrador
+  /pedidos/borrar/{id}:
+    delete:
+      tags:
+        - Pedidos
+      summary: Borra un pedido de la BD
+      description: ''
+      operationId: deleteOrder
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: api_key
+          in: header
+          required: false
+          type: string      
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Pedido borrado exitosamente        
+        '401':
+          description: Usuario no autorizado (solo administradores borran)
+        '404':
+          description: Pedido no encontrado        
+definitions:
+  Pedido:
+    type: "object"
+    properties:
+      idFormaPago:
+        type: "string"
+      direccion:
+          type: "array"
+          items:
+            $ref: "#/definitions/Direccion"
+      detallePedido:
+          type: "array"
+          items:
+            $ref: "#/definitions/DetallePedido"            
+    xml:
+      name: "Pedido"      
+  Usuarios:
+    type: object
+    properties:
+      usuario:
+        type: string
+      password:
+        type: string
+      nombre:
+        type: string
+      apellido:
+        type: string
+      mail:
+        type: string
+      telefono:
+        type: string
+      rol:
+        type: string
+        description: Rol del usuario (administrador, cliente, etc.)
+  Productos:
+    type: object
+    properties:
+      descripcion:
+        type: string
+      precio:
+        type: string
+      imagen:
+        type: string
+  Login:
+    type: object  
+    properties:    
+      usuario:
+        type: string
+      password:
+        type: string  
+  UsuarioLogueado:
+    type: object
+    properties:
+      password:
+        type: string
+      nombre:
+        type: string
+      apellido:
+        type: string
+      mail:
+        type: string
+      telefono:
+        type: string
+    xml:
+      name: UsuarioLogueado    
+  Direccion:
+    type: object
+    properties:
+      calle:
+        type: string
+      numero:
+        type: string
+      piso:
+        type: string
+      departamento:
+        type: string
+      sector:
+        type: string
+    xml:
+      name: Direccion   
+  DetallePedido:
+    type: object
+    properties:
+      producto:
+        type: "string"
+      cantidad:
+        type: "string"
+      precio:
+        type: "string"
+    xml:
+      name: DetallePedido     
+  PedidoIndividual:
+    type: object
+    properties:
+      USU_USUARIO:
+        type: "string"
+      USU_MAIL:
+        type: "string"
+      NOM_Y_APE:
+        type: "string"
+      direccion:
+          type: "array"
+          items:
+            $ref: "#/definitions/Direccion"       
+      detellepedido:
+          type: "array"
+          items:
+            $ref: "#/definitions/DetallePedido"                 
+    xml:
+      name: PedidoIndividual 
+  PedidosCompletos:
+    type: object
+    properties:
+      ped_hora:
+        type: "string"
+        format: "date-time"
+      est_descripcion:
+        type: "string"
+        enum:
+        - "Nuevo"
+        - "Confirmado"
+        - "En Preparacion"   
+        - "En Camino"
+        - "Entregado"
+        - "Cancelado"         
+      ped_id:
+        type: "integer"
+        format: "int64"      
+      for_descripcion:
+          type: "string"
+          enum:
+          - "Efectivo"
+          - "Tarjeta de Credito"
+          - "Tarjeta de Debito"        
+      usu_usuario:
+        type: "string"
+      usu_mail:
+        type: "string"
+      nom_y_ape:
+        type: "string"
+      direccion:
+          type: "array"
+          items:
+            $ref: "#/definitions/Direccion"       
+      detellepedido:
+          type: "array"
+          items:
+            $ref: "#/definitions/DetallePedido"                 
+    xml:
+      name: PedidosCompletos    
+  CambiarEstado:
+    type: object  
+    properties:    
+      idPedido:
+        type: "integer"
+        format: "int64"
+      nuevo_estado:
+        type: string    
+    xml:        
+      name: CambiarEstado          
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
